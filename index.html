@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Shop</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000;min-height:100vh;font-family:Arial,sans-serif}
+.app{background:#000;min-height:100vh;color:#fff;max-width:480px;margin:0 auto;padding-bottom:40px}
+.header{padding:24px 24px 0}
+.red-line{height:3px;background:#cc0000;margin:10px 0 0}
+.screen{display:none;padding:24px 24px 32px}
+.screen.active{display:block}
+.step-label{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}
+.screen-heading{font-size:24px;font-weight:700;color:#fff;margin-bottom:6px}
+.screen-sub{font-size:14px;color:#666;margin-bottom:28px;line-height:1.5}
+.option-btn{width:100%;background:#111;border:1px solid #222;border-radius:12px;padding:16px 18px;color:#ccc;font-size:16px;font-weight:500;text-align:left;cursor:pointer;margin-bottom:12px;display:flex;align-items:center;gap:14px;transition:border-color .15s,background .15s}
+.option-btn.selected{border-color:#cc0000;background:#1a0000;color:#fff}
+.option-btn .radio{width:20px;height:20px;border-radius:50%;border:2px solid #444;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.option-btn.selected .radio{border-color:#cc0000;background:#cc0000}
+.option-btn.selected .radio::after{content:"";width:8px;height:8px;background:#fff;border-radius:50%;display:block}
+.field-group{margin-bottom:18px}
+.field-label{font-size:11px;color:#666;margin-bottom:7px;display:block;text-transform:uppercase;letter-spacing:1px}
+input,textarea,select{width:100%;background:#111;border:1px solid #222;border-radius:12px;padding:14px 16px;color:#fff;font-size:16px;outline:none;font-family:Arial,sans-serif;-webkit-appearance:none}
+input:focus,textarea:focus,select:focus{border-color:#cc0000}
+textarea{resize:none;height:110px}
+.photo-upload{background:#111;border:1px dashed #333;border-radius:12px;padding:24px;text-align:center;cursor:pointer;color:#555;font-size:14px}
+.photo-upload:hover{border-color:#cc0000}
+.photo-preview{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.photo-preview img{width:80px;height:80px;object-fit:cover;border-radius:10px;border:1px solid #222}
+.btn-next{width:100%;background:#cc0000;color:#fff;border:none;border-radius:12px;padding:18px;font-size:17px;font-weight:700;cursor:pointer;margin-top:28px;-webkit-appearance:none}
+.btn-next:disabled{background:#3a0000;color:#553333;cursor:not-allowed}
+.btn-back{background:none;border:none;color:#555;font-size:14px;cursor:pointer;padding:14px 0 0;display:block}
+.progress{display:flex;gap:6px;padding:18px 24px 0}
+.progress-dot{height:3px;flex:1;background:#1a1a1a;border-radius:2px;transition:background .3s}
+.progress-dot.done{background:#cc0000}
+.welcome-screen{padding:40px 24px 32px;display:flex;flex-direction:column;min-height:70vh}
+.welcome-screen.hidden{display:none}
+.success-screen{padding:80px 24px;text-align:center;display:none}
+.success-screen.active{display:block}
+.success-icon{width:72px;height:72px;background:#1a0000;border:2px solid #cc0000;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+<svg width="100%" viewBox="0 0 500 100" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;display:block">
+<polygon points="10,12 490,12 490,30 24,30" fill="#fff"/>
+<polygon points="10,12 50,12 76,88 36,88" fill="#fff"/>
+<text x="68" y="86" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-style="italic" font-size="76" fill="#fff">he Shop</text>
+</svg>
+<div class="red-line"></div>
+</div>
+<div class="progress" id="progress" style="display:none">
+<div class="progress-dot" id="p1"></div><div class="progress-dot" id="p2"></div><div class="progress-dot" id="p3"></div><div class="progress-dot" id="p4"></div><div class="progress-dot" id="p5"></div>
+</div>
+<div class="welcome-screen" id="welcome">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding-top:40px">
+<div style="font-size:30px;font-weight:700;line-height:1.3;margin-bottom:14px">Rust repair &amp; restoration specialists.</div>
+<div style="font-size:16px;color:#666;line-height:1.7">Tell us about your vehicle and what you need — we'll get back to you with everything you need to know.</div>
+</div>
+<button class="btn-next" onclick="startForm()">Get started</button>
+</div>
+<div class="screen" id="s1">
+<div class="step-label">Step 1 of 5</div>
+<div class="screen-heading">What do you need?</div>
+<div class="screen-sub">Select the service you're looking for.</div>
+<div class="option-btn" onclick="selectOption(this,'service','Rust repair')"><span class="radio"></span>Rust repair</div>
+<div class="option-btn" onclick="selectOption(this,'service','Restoration')"><span class="radio"></span>Restoration</div>
+<div class="option-btn" onclick="selectOption(this,'service','Other')"><span class="radio"></span>Other</div>
+<button class="btn-next" id="next1" onclick="goTo(2)" disabled>Next</button>
+<button class="btn-back" onclick="goWelcome()">Back</button>
+</div>
+<div class="screen" id="s2">
+<div class="step-label">Step 2 of 5</div>
+<div class="screen-heading">Tell us about your vehicle.</div>
+<div class="screen-sub">We need a few details to give you an accurate assessment.</div>
+<div class="field-group"><label class="field-label">Year</label><input type="text" id="year" placeholder="e.g. 1969" oninput="checkS2()"></div>
+<div class="field-group"><label class="field-label">Make</label><input type="text" id="make" placeholder="e.g. Ford" oninput="checkS2()"></div>
+<div class="field-group"><label class="field-label">Model</label><input type="text" id="model" placeholder="e.g. Mustang" oninput="checkS2()"></div>
+<div class="field-group"><label class="field-label">Vehicle type</label>
+<select id="vtype" onchange="checkS2()"><option value="">Select type...</option><option>Car</option><option>Truck</option><option>SUV</option><option>Van</option><option>Motorcycle</option><option>Other</option></select>
+</div>
+<button class="btn-next" id="next2" onclick="goTo(3)" disabled>Next</button>
+<button class="btn-back" onclick="goTo(1)">Back</button>
+</div>
+<div class="screen" id="s3">
+<div class="step-label">Step 3 of 5</div>
+<div class="screen-heading">Describe the damage.</div>
+<div class="screen-sub">Tell us where the rust or damage is and how bad it looks.</div>
+<div class="field-group"><label class="field-label">Description</label><textarea id="desc" placeholder="e.g. Rocker panels on both sides..." oninput="checkS3()"></textarea></div>
+<div class="field-group"><label class="field-label">Photos</label>
+<div class="photo-upload" onclick="document.getElementById('photos').click()">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="display:block;margin:0 auto 10px"><rect x="2" y="5" width="20" height="15" rx="3" stroke="#555" stroke-width="1.5"/><circle cx="12" cy="12" r="3.5" stroke="#555" stroke-width="1.5"/></svg>
+Tap to add photos
+</div>
+<input type="file" id="photos" multiple accept="image/*" style="display:none" onchange="previewPhotos(this)">
+<div class="photo-preview" id="photoPreview"></div>
+</div>
+<button class="btn-next" id="next3" onclick="goTo(4)" disabled>Next</button>
+<button class="btn-back" onclick="goTo(2)">Back</button>
+</div>
+<div class="screen" id="s4">
+<div class="step-label">Step 4 of 5</div>
+<div class="screen-heading">When do you want to start?</div>
+<div class="screen-sub">This helps us plan availability for you.</div>
+<div class="option-btn" onclick="selectOption(this,'timeframe','ASAP')"><span class="radio"></span>ASAP</div>
+<div class="option-btn" onclick="selectOption(this,'timeframe','Within 1 month')"><span class="radio"></span>Within 1 month</div>
+<div class="option-btn" onclick="selectOption(this,'timeframe','Within 3 months')"><span class="radio"></span>Within 3 months</div>
+<div class="option-btn" onclick="selectOption(this,'timeframe','No rush')"><span class="radio"></span>No rush</div>
+<div style="margin-top:14px"><label class="field-label">Additional notes (optional)</label><textarea id="tfnotes" placeholder="Anything else about your timeline..." style="height:90px"></textarea></div>
+<button class="btn-next" id="next4" onclick="goTo(5)" disabled>Next</button>
+<button class="btn-back" onclick="goTo(3)">Back</button>
+</div>
+<div class="screen" id="s5">
+<div class="step-label">Step 5 of 5</div>
+<div class="screen-heading">Your contact info.</div>
+<div class="screen-sub">We'll use this to get back to you with next steps.</div>
+<div class="field-group"><label class="field-label">Full name</label><input type="text" id="name" placeholder="John Smith" oninput="checkS5()"></div>
+<div class="field-group"><label class="field-label">Phone number</label><input type="tel" id="phone" placeholder="(555) 555-5555" oninput="checkS5()"></div>
+<div class="field-group"><label class="field-label">Email address</label><input type="email" id="email" placeholder="you@email.com" oninput="checkS5()"></div>
+<button class="btn-next" id="next5" onclick="submitForm()" disabled>Submit request</button>
+<button class="btn-back" onclick="goTo(4)">Back</button>
+</div>
+<div class="success-screen" id="success">
+<div class="success-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="#cc0000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<div style="font-size:26px;font-weight:700;margin-bottom:14px">Request sent!</div>
+<div style="font-size:16px;color:#666;line-height:1.7">Thanks! We've received your request and will be in touch soon.</div>
+</div>
+</div>
+<script>
+const data={service:"",timeframe:""};
+function startForm(){document.getElementById("welcome").classList.add("hidden");document.getElementById("progress").style.display="flex";goTo(1);}
+function goWelcome(){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById("welcome").classList.remove("hidden");document.getElementById("progress").style.display="none";}
+function goTo(n){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById("s"+n).classList.add("active");for(let i=1;i<=5;i++){document.getElementById("p"+i).classList.toggle("done",i<=n);}window.scrollTo(0,0);}
+function selectOption(el,key,val){el.parentElement.querySelectorAll(".option-btn").forEach(b=>b.classList.remove("selected"));el.classList.add("selected");data[key]=val;if(key==="service")document.getElementById("next1").disabled=false;if(key==="timeframe")document.getElementById("next4").disabled=false;}
+function checkS2(){const ok=document.getElementById("year").value.trim()&&document.getElementById("make").value.trim()&&document.getElementById("model").value.trim()&&document.getElementById("vtype").value;document.getElementById("next2").disabled=!ok;}
+function checkS3(){document.getElementById("next3").disabled=!document.getElementById("desc").value.trim();}
+function checkS5(){const ok=document.getElementById("name").value.trim()&&document.getElementById("phone").value.trim()&&document.getElementById("email").value.trim();document.getElementById("next5").disabled=!ok;}
+function previewPhotos(input){const preview=document.getElementById("photoPreview");preview.innerHTML="";Array.from(input.files).forEach(f=>{const img=document.createElement("img");img.src=URL.createObjectURL(f);preview.appendChild(img);});}
+function submitForm(){const subject=encodeURIComponent("New request — The Shop");const body=encodeURIComponent("SERVICE: "+data.service+"\n\nVEHICLE: "+document.getElementById("year").value+" "+document.getElementById("make").value+" "+document.getElementById("model").value+" ("+document.getElementById("vtype").value+")\n\nDAMAGE:\n"+document.getElementById("desc").value+"\n\nTIMEFRAME: "+data.timeframe+"\n"+(document.getElementById("tfnotes").value?"Notes: "+document.getElementById("tfnotes").value+"\n":"")+"\nCONTACT:\nName: "+document.getElementById("name").value+"\nPhone: "+document.getElementById("phone").value+"\nEmail: "+document.getElementById("email").value);window.location.href="mailto:theshopcustomrepair@gmail.com?subject="+subject+"&body="+body;document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById("progress").style.display="none";document.getElementById("success").classList.add("active");}
+</script>
+</body>
+</html>
